@@ -157,7 +157,7 @@ define(["dojo/has",
 			if(_map && !sameItem){
 				_map.select(item);
 			}
-			if(_mobile && sameItem){
+			if(_mobile){
 				_mobileLayout.hideList();
 			}
 		}

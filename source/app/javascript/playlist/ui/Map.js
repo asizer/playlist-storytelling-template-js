@@ -202,7 +202,11 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 				}
 
 				if (!has("ie")){
-					graphic.getDojoShape().moveToFront();
+					try {
+						graphic.getDojoShape().moveToFront();
+					} catch(error) {
+						console.warn('Tried to moveToFront on null getDojoShape call');
+					}
 				}				
 			});
 		};
@@ -228,7 +232,11 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 						
 						graphic.setSymbol(newSym);
 						if (!has("ie")){
-							graphic.getDojoShape().moveToFront();
+							try {
+								graphic.getDojoShape().moveToFront();
+							} catch (error) {
+								console.warn('Tried to moveToFront on null getDojoShape call');
+							}
 						}
 
 						showMapTip(graphic,titleAttr);
@@ -535,7 +543,11 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 					_lastHightlighedGraphic = event.graphic;
 					event.graphic.setSymbol(newSym);
 					if (!has("ie")){
-						event.graphic.getDojoShape().moveToFront();
+						try {
+							event.graphic.getDojoShape().moveToFront();
+						} catch(error) {
+							console.warn('Tried to moveToFront on null getDojoShape call');
+						}
 					}
 					_map.setCursor("pointer");
 
