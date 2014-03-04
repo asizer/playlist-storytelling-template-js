@@ -584,35 +584,23 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 				var extent = _map.extent;
 				var sidePaneWidth = getSidePanelWidth() * _map.getResolution();
 				var offsetWidth = (_map.extent.getWidth()/5)*2;
-				var offsetHeight = (_map.extent.getHeight()/5)*2;
 				var offsetX = 0;
-				var offsetY = 0;
 
 				if (isMobile){
 					sidePaneWidth = 0;
 				}
 
-				if (geo.x > extent.xmax){
+				if (geo.x >= extent.xmax){
 					offsetX = -offsetWidth;
 				}
-				else if (geo.x < extent.xmin + sidePaneWidth){
+				else if (geo.x <= extent.xmin + sidePaneWidth){
 					offsetX = offsetWidth - sidePaneWidth;
 				}
 				else{
 					offsetX = extent.getCenter().x - geo.x;
 				}
 
-				if (geo.y > extent.ymax){
-					offsetY = -offsetHeight;
-				}
-				else if (geo.y < extent.ymin){
-					offsetY = offsetHeight;
-				}
-				else{
-					offsetY = extent.getCenter().y - geo.y;
-				}
-
-				var newPt = geo.offset(offsetX,offsetY);
+				var newPt = geo.offset(offsetX, 0);
 
 				_map.centerAt(newPt);
 			}
@@ -628,6 +616,15 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 
 			_map.infoWindow.setFeatures([graphic]);
 			_map.infoWindow.show(location);
+
+			if (!isMobile) {
+				var sidebarOverlap = domGeom.position(query(sidePaneSelector)[0]).w - domGeom.position(_map.infoWindow.domNode.firstChild).x;
+				if (sidebarOverlap > 0) {
+					var offsetX = -sidebarOverlap * _map.getResolution() * 1.2;
+					var newPt = _map.extent.getCenter().offset(offsetX, 0);
+					_map.centerAt(newPt);
+				}
+			}
 		}
 
 		function showMapTip(graphic,titleAttr)
