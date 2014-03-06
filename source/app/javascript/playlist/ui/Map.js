@@ -121,6 +121,12 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 					}
 				});
 
+				if (!isMobile) {
+					on(_map, 'click', function() {
+						adjustMapPosition();
+					});
+				}
+
 				on(popup,"hide",function(){
 					_highlightEnabled = true;
 					onRemoveSelection();
@@ -618,13 +624,26 @@ define(["storymaps/playlist/config/MapConfig","esri/map",
 			_map.infoWindow.show(location);
 
 			if (!isMobile) {
-				var sidebarOverlap = domGeom.position(query(sidePaneSelector)[0]).w - domGeom.position(_map.infoWindow.domNode.firstChild).x;
-				if (sidebarOverlap > 0) {
-					var offsetX = -sidebarOverlap * _map.getResolution() * 1.2;
-					var newPt = _map.extent.getCenter().offset(offsetX, 0);
-					_map.centerAt(newPt);
-				}
+				adjustMapPosition();
 			}
+		}
+
+		function adjustMapPosition() {
+			if (!_map.infoWindow.isShowing) {
+				return;
+			}
+			var sidebarOverlap = domGeom.position(query(sidePaneSelector)[0]).w - domGeom.position(_map.infoWindow.domNode.firstChild).x;
+			var mapResolution = _map.getResolution();
+			var offsetX;
+			if (sidebarOverlap >= 0) {
+				offsetX = -sidebarOverlap * mapResolution - (_map.width * mapResolution * 0.02);
+			} else if (sidebarOverlap > _map.width * -0.01) {
+				offsetX = _map.width * mapResolution * -0.01;
+			} else {
+				return;
+			}
+			var newPt = _map.extent.getCenter().offset(offsetX, 0);
+			_map.centerAt(newPt);
 		}
 
 		function showMapTip(graphic,titleAttr)
